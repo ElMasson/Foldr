@@ -104,6 +104,10 @@
     </task>
     <servers />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial commit of FOLDR project" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial commit of FOLDR project" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
