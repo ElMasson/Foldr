@@ -4,44 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4619c402-4cce-4de5-92ec-f8f618e3e9bf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Foldr2.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/answer_generation/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/answer_generation/generate_answers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/answer_generation/generate_subvention_answers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/answer_generation/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/document_processing/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/document_processing/extract_questions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/document_processing/process_document.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/document_processing/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/files/.gitkeep" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/files/Dossier-de-candidature-CCEIR-2024.docx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/files/FOLDR - Small Specifications.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/img/foldr_logo.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/answer_generator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/document_processor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/question_extractor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/response_critic.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/web_search.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testmain.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_interface/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_interface/display_results.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_interface/sidebar_config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_interface/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_search/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_search/process_search_results.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_search/search_google.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web_search/utils.py" afterDir="false" />
+    <list default="true" id="4619c402-4cce-4de5-92ec-f8f618e3e9bf" name="Changes" comment="Add.gitignore file">
+      <change afterPath="$PROJECT_DIR$/answer_generation/response_critic.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/response_critique/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/response_critique/critique_generator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/response_critique/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Foldr2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Foldr2.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/answer_generation/generate_answers.py" beforeDir="false" afterPath="$PROJECT_DIR$/answer_generation/generate_answers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/document_processing/extract_questions.py" beforeDir="false" afterPath="$PROJECT_DIR$/document_processing/extract_questions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/document_processing/process_document.py" beforeDir="false" afterPath="$PROJECT_DIR$/document_processing/process_document.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_interface/display_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_interface/display_results.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_interface/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_interface/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +27,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
@@ -62,17 +47,25 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;Python.testmain.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/pc/PycharmProjects/Foldr2/img&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;PyConsoleConfigurable.Python Console&quot;
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
-      <console-settings module-name="Foldr2" is-module-sdk="true">
-        <option name="myUseModuleSdk" value="true" />
+      <console-settings module-name="Foldr2" sdk-home="$PROJECT_DIR$/../Codestral file analytics x Streamlit/.venv/Scripts/python.exe">
+        <option name="sdk">
+          <Sdk />
+        </option>
+        <option name="mySdkHome" value="$PROJECT_DIR$/../Codestral file analytics x Streamlit/.venv/Scripts/python.exe" />
+        <option name="mySdk">
+          <Sdk />
+        </option>
         <option name="myModuleName" value="Foldr2" />
       </console-settings>
     </option>
@@ -83,6 +76,7 @@
       <recent name="C:\Users\pc\PycharmProjects\Foldr2\files" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\pc\PycharmProjects\Foldr2" />
       <recent name="C:\Users\pc\PycharmProjects\Foldr2\output" />
     </key>
   </component>
@@ -102,11 +96,29 @@
       <option name="presentableId" value="Default" />
       <updated>1722673511702</updated>
     </task>
+    <task id="LOCAL-00001" summary="Initial commit of FOLDR project">
+      <option name="closed" value="true" />
+      <created>1723886272970</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1723886272970</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add.gitignore file">
+      <option name="closed" value="true" />
+      <created>1723886531810</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1723886531810</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit of FOLDR project" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit of FOLDR project" />
+    <MESSAGE value="Add.gitignore file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add.gitignore file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -114,6 +126,11 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/response_critic.py</url>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/response_critique/critique_generator.py</url>
+          <line>20</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
