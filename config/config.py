@@ -1,3 +1,5 @@
+#config/config.py
+
 import os
 from dotenv import load_dotenv
 
@@ -12,3 +14,4 @@ LLAMA_CLOUD_API_KEY = os.getenv('LLAMA_CLOUD_API_KEY')
 
 if not all([MISTRALAI_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, GOOGLE_CSE_ID, COHERE_API_KEY, LLAMA_CLOUD_API_KEY]):
     raise ValueError("Toutes les clés API nécessaires ne sont pas définies dans le fichier .env")
+

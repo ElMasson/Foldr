@@ -1,3 +1,5 @@
+#main.py
+
 import streamlit as st
 from user_interface.sidebar_config import sidebar_config
 from user_interface.display_results import display_results
@@ -5,6 +7,7 @@ from document_processing.process_document import process_document
 from document_processing.extract_questions import extract_questions, summarize_questions
 from web_search.search_google import get_subvention_context
 from user_interface.utils import save_project
+
 
 st.set_page_config(page_title="FOLDR : Optimisez vos demandes, multipliez vos chances de financement", layout="wide")
 

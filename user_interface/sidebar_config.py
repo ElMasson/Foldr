@@ -1,3 +1,5 @@
+#user_interface/sidebar_config.py
+
 import streamlit as st
 import os
 from .utils import get_previous_projects, get_previous_files, save_uploaded_file, get_project_files, save_project_files

@@ -43,3 +43,13 @@ llama-index-embeddings-cohere
 
 crewai
 openai
+
+graspologic
+numpy
+scipy
+
+reportlab
+
+weasyprint
+matplotlib
+jinja2

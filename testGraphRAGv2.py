@@ -1,28 +1,26 @@
 import pandas as pd
-from llama_index.core import Document
-from llama_index.llms.openai import OpenAI
 import os
 
-os.environ["OPENAI_API_KEY"] = "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"
+from llama_index.core import Document
 
+os.environ["OPENAI_API_KEY"] = "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"
 
 news = pd.read_csv(
     "https://raw.githubusercontent.com/tomasonjo/blog-datasets/main/news_articles.csv"
 )[:50]
 
-print(news.head())
+news.head()
 
+print(news.head())
 
 documents = [
     Document(text=f"{row['title']}: {row['text']}")
     for i, row in news.iterrows()
 ]
 
-
+from llama_index.llms.openai import OpenAI
 
 llm = OpenAI(model="gpt-4o")
-
-print('Config finie')
 
 import asyncio
 import nest_asyncio
@@ -127,30 +125,25 @@ class GraphRAGExtractor(TransformComponent):
 
         existing_nodes = node.metadata.pop(KG_NODES_KEY, [])
         existing_relations = node.metadata.pop(KG_RELATIONS_KEY, [])
-        metadata = node.metadata.copy()
+        entity_metadata = node.metadata.copy()
         for entity, entity_type, description in entities:
-            metadata[
-                "entity_description"
-            ] = description  # Not used in the current implementation. But will be useful in future work.
+            entity_metadata["entity_description"] = description
             entity_node = EntityNode(
-                name=entity, label=entity_type, properties=metadata
+                name=entity, label=entity_type, properties=entity_metadata
             )
             existing_nodes.append(entity_node)
 
-        metadata = node.metadata.copy()
+        relation_metadata = node.metadata.copy()
         for triple in entities_relationship:
-            subj, rel, obj, description = triple
-            subj_node = EntityNode(name=subj, properties=metadata)
-            obj_node = EntityNode(name=obj, properties=metadata)
-            metadata["relationship_description"] = description
+            subj, obj, rel, description = triple
+            relation_metadata["relationship_description"] = description
             rel_node = Relation(
                 label=rel,
-                source_id=subj_node.id,
-                target_id=obj_node.id,
-                properties=metadata,
+                source_id=subj,
+                target_id=obj,
+                properties=relation_metadata,
             )
 
-            existing_nodes.extend([subj_node, obj_node])
             existing_relations.append(rel_node)
 
         node.metadata[KG_NODES_KEY] = existing_nodes
@@ -172,18 +165,20 @@ class GraphRAGExtractor(TransformComponent):
             desc="Extracting paths from text",
         )
 
-print('GraphRAGExtractor')
+print("GraphRAGExtractor")
 
 import re
-from llama_index.core.graph_stores import SimplePropertyGraphStore
 import networkx as nx
 from graspologic.partition import hierarchical_leiden
+from collections import defaultdict
 
 from llama_index.core.llms import ChatMessage
+from llama_index.graph_stores.neo4j import Neo4jPropertyGraphStore
 
 
-class GraphRAGStore(SimplePropertyGraphStore):
+class GraphRAGStore(Neo4jPropertyGraphStore):
     community_summary = {}
+    entity_info = None
     max_cluster_size = 5
 
     def generate_community_summary(self, text):
@@ -212,7 +207,7 @@ class GraphRAGStore(SimplePropertyGraphStore):
         community_hierarchical_clusters = hierarchical_leiden(
             nx_graph, max_cluster_size=self.max_cluster_size
         )
-        community_info = self._collect_community_info(
+        self.entity_info, community_info = self._collect_community_info(
             nx_graph, community_hierarchical_clusters
         )
         self._summarize_communities(community_info)
@@ -220,9 +215,10 @@ class GraphRAGStore(SimplePropertyGraphStore):
     def _create_nx_graph(self):
         """Converts internal graph representation to NetworkX graph."""
         nx_graph = nx.Graph()
-        for node in self.graph.nodes.values():
-            nx_graph.add_node(str(node))
-        for relation in self.graph.relations.values():
+        triplets = self.get_triplets()
+        for entity1, relation, entity2 in triplets:
+            nx_graph.add_node(entity1.name)
+            nx_graph.add_node(entity2.name)
             nx_graph.add_edge(
                 relation.source_id,
                 relation.target_id,
@@ -232,22 +228,30 @@ class GraphRAGStore(SimplePropertyGraphStore):
         return nx_graph
 
     def _collect_community_info(self, nx_graph, clusters):
-        """Collect detailed information for each node based on their community."""
-        community_mapping = {item.node: item.cluster for item in clusters}
-        community_info = {}
+        """
+        Collect information for each node based on their community,
+        allowing entities to belong to multiple clusters.
+        """
+        entity_info = defaultdict(set)
+        community_info = defaultdict(list)
+
         for item in clusters:
-            cluster_id = item.cluster
             node = item.node
-            if cluster_id not in community_info:
-                community_info[cluster_id] = []
+            cluster_id = item.cluster
+
+            # Update entity_info
+            entity_info[node].add(cluster_id)
 
             for neighbor in nx_graph.neighbors(node):
-                if community_mapping[neighbor] == cluster_id:
-                    edge_data = nx_graph.get_edge_data(node, neighbor)
-                    if edge_data:
-                        detail = f"{node} -> {neighbor} -> {edge_data['relationship']} -> {edge_data['description']}"
-                        community_info[cluster_id].append(detail)
-        return community_info
+                edge_data = nx_graph.get_edge_data(node, neighbor)
+                if edge_data:
+                    detail = f"{node} -> {neighbor} -> {edge_data['relationship']} -> {edge_data['description']}"
+                    community_info[cluster_id].append(detail)
+
+        # Convert sets to lists for easier serialization if needed
+        entity_info = {k: list(v) for k, v in entity_info.items()}
+
+        return dict(entity_info), dict(community_info)
 
     def _summarize_communities(self, community_info):
         """Generate and store summaries for each community."""
@@ -265,28 +269,76 @@ class GraphRAGStore(SimplePropertyGraphStore):
             self.build_communities()
         return self.community_summary
 
-print("GraphRAGstore")
-
-
+print('GraphRAGStore')
 
 from llama_index.core.query_engine import CustomQueryEngine
 from llama_index.core.llms import LLM
+from llama_index.core import PropertyGraphIndex
+
+import re
 
 
 class GraphRAGQueryEngine(CustomQueryEngine):
     graph_store: GraphRAGStore
+    index: PropertyGraphIndex
     llm: LLM
+    similarity_top_k: int = 20
 
     def custom_query(self, query_str: str) -> str:
         """Process all community summaries to generate answers to a specific query."""
+
+        entities = self.get_entities(query_str, self.similarity_top_k)
+
+        community_ids = self.retrieve_entity_communities(
+            self.graph_store.entity_info, entities
+        )
         community_summaries = self.graph_store.get_community_summaries()
         community_answers = [
             self.generate_answer_from_summary(community_summary, query_str)
-            for _, community_summary in community_summaries.items()
+            for id, community_summary in community_summaries.items()
+            if id in community_ids
         ]
 
         final_answer = self.aggregate_answers(community_answers)
         return final_answer
+
+    def get_entities(self, query_str, similarity_top_k):
+        nodes_retrieved = self.index.as_retriever(
+            similarity_top_k=similarity_top_k
+        ).retrieve(query_str)
+
+        enitites = set()
+        pattern = r"(\w+(?:\s+\w+)*)\s*{[^}]*}{[^}]*}{[^}]*}\s*->\s*([^(]+?)\s*{[^}]*}{[^}]*}{[^}]*}\s*->\s*(\w+(?:\s+\w+)*)"
+
+        for node in nodes_retrieved:
+            matches = re.findall(pattern, node.text, re.DOTALL)
+
+            for match in matches:
+                subject = match[0]
+                obj = match[2]
+                enitites.add(subject)
+                enitites.add(obj)
+
+        return list(enitites)
+
+    def retrieve_entity_communities(self, entity_info, entities):
+        """
+        Retrieve cluster information for given entities, allowing for multiple clusters per entity.
+
+        Args:
+        entity_info (dict): Dictionary mapping entities to their cluster IDs (list).
+        entities (list): List of entity names to retrieve information for.
+
+        Returns:
+        List of community or cluster IDs to which an entity belongs.
+        """
+        community_ids = []
+
+        for entity in entities:
+            if entity in entity_info:
+                community_ids.extend(entity_info[entity])
+
+        return list(set(community_ids))
 
     def generate_answer_from_summary(self, community_summary, query):
         """Generate an answer from a community summary based on a given query using LLM."""
@@ -322,7 +374,7 @@ class GraphRAGQueryEngine(CustomQueryEngine):
         ).strip()
         return cleaned_final_response
 
-print('GraphRAGQueryEngine')
+print("GraphRAGQueryEngine")
 
 from llama_index.core.node_parser import SentenceSplitter
 
@@ -334,7 +386,10 @@ nodes = splitter.get_nodes_from_documents(documents)
 
 len(nodes)
 
-print('Create nodes/ chunks from the text.')
+print(len(nodes))
+
+print("Create nodes/ chunks from the text.¶")
+
 
 KG_TRIPLET_EXTRACT_TMPL = """
 -Goal-
@@ -368,6 +423,7 @@ output:"""
 entity_pattern = r'"entity"$$$$"(.+?)"$$$$"(.+?)"$$$$"(.+?)""entity"$$$$"(.+?)"$$$$"(.+?)"$$$$"(.+?)""entity"\$\$\$\$"(.+?)"\$\$\$\$"(.+?)"\$\$\$\$"(.+?)"'
 relationship_pattern = r'"relationship"$$$$"(.+?)"$$$$"(.+?)"$$$$"(.+?)"$$$$"(.+?)""relationship"$$$$"(.+?)"$$$$"(.+?)"$$$$"(.+?)"$$$$"(.+?)""relationship"\$\$\$\$"(.+?)"\$\$\$\$"(.+?)"\$\$\$\$"(.+?)"\$\$\$\$"(.+?)"'
 
+
 def parse_fn(response_str: str) -> Any:
     entities = re.findall(entity_pattern, response_str)
     relationships = re.findall(relationship_pattern, response_str)
@@ -381,32 +437,13 @@ kg_extractor = GraphRAGExtractor(
     parse_fn=parse_fn,
 )
 
-from llama_index.core import PropertyGraphIndex
+print('Build ProperGraphIndex using GraphRAGExtractor and GraphRAGStore')
 
-index = PropertyGraphIndex(
-    nodes=nodes,
-    property_graph_store=GraphRAGStore(),
-    kg_extractors=[kg_extractor],
-    show_progress=True,
+
+from llama_index.graph_stores.neo4j import Neo4jPropertyGraphStore
+
+# Note: used to be `Neo4jPGStore`
+graph_store = GraphRAGStore(
+    username="neo4j", password="sharp-inside-bazooka-legacy-fashion-5077", url="neo4j://localhost:7687"
 )
 
-
-
-print('build ProperGraphIndex')
-
-index.property_graph_store.build_communities()
-
-print('build communities')
-
-
-query_engine = GraphRAGQueryEngine(
-    graph_store=index.property_graph_store, llm=llm
-)
-
-
-print('build QueryEngine')
-
-response = query_engine.query(
-    "What are the main news discussed in the document?"
-)
-display(Markdown(f"{response.response}"))

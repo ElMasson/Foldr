@@ -7,7 +7,7 @@ class ResponseCritic:
     def __init__(self, context, expert_analysis):
         self.context = context
         self.expert_analysis = expert_analysis
-        self.llm = ChatOpenAI(model_name="gpt-4", openai_api_key=OPENAI_API_KEY)
+        self.llm = ChatOpenAI(model_name="gpt-4o-mini", openai_api_key=OPENAI_API_KEY)
 
     def critique_response(self, question, response):
         context_analyst = Agent(
